@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.40629.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Scena2D", "Scena2D\Scena2D.vcxproj", "{5BD4B02E-4983-40FA-9BA0-6BFD3425F083}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Scena3D", "Scena3D\Scena3D.vcxproj", "{76FDBD18-8BF2-43C8-A7CC-24CAC35BACE6}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EditorCurve", "EditorCurve\EditorCurve.vcxproj", "{82A878F2-B790-40F2-BEF6-F13CAD352465}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5BD4B02E-4983-40FA-9BA0-6BFD3425F083}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5BD4B02E-4983-40FA-9BA0-6BFD3425F083}.Debug|Win32.Build.0 = Debug|Win32
+		{5BD4B02E-4983-40FA-9BA0-6BFD3425F083}.Release|Win32.ActiveCfg = Release|Win32
+		{5BD4B02E-4983-40FA-9BA0-6BFD3425F083}.Release|Win32.Build.0 = Release|Win32
+		{76FDBD18-8BF2-43C8-A7CC-24CAC35BACE6}.Debug|Win32.ActiveCfg = Debug|Win32
+		{76FDBD18-8BF2-43C8-A7CC-24CAC35BACE6}.Debug|Win32.Build.0 = Debug|Win32
+		{76FDBD18-8BF2-43C8-A7CC-24CAC35BACE6}.Release|Win32.ActiveCfg = Release|Win32
+		{76FDBD18-8BF2-43C8-A7CC-24CAC35BACE6}.Release|Win32.Build.0 = Release|Win32
+		{82A878F2-B790-40F2-BEF6-F13CAD352465}.Debug|Win32.ActiveCfg = Debug|Win32
+		{82A878F2-B790-40F2-BEF6-F13CAD352465}.Debug|Win32.Build.0 = Debug|Win32
+		{82A878F2-B790-40F2-BEF6-F13CAD352465}.Release|Win32.ActiveCfg = Release|Win32
+		{82A878F2-B790-40F2-BEF6-F13CAD352465}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
