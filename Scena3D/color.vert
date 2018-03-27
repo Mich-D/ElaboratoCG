@@ -1,10 +1,10 @@
-#version 400
+#version 420
 
 in vec3 position;
 
-uniform mat4 projMat;
+uniform mat4 MVP;
 
 void main(void)
 {
-	gl_Position = projMat * vec4(position, 1.0);
+	gl_Position = MVP * vec4(position, 1.0);
 }

@@ -17,6 +17,14 @@ typedef struct {
 } POINT2D;
 
 typedef struct {
+    float* t;
+    float* x;
+    float* y;
+    float* px;
+    float* py;
+} Bezier;
+
+typedef struct {
 	float* t;
 	float* Nodi;
 	float* x;
@@ -28,18 +36,145 @@ typedef struct {
 } BSpline;
 
 typedef struct {
-
-};
+    float* t;
+    float* Nodi;
+    float* x;
+    float* y;
+    float* alpha;
+    float* beta;
+    float* sx;
+    float* sy;
+} BSplineM;
 
 vector<POINT2D> Punti;
+Bezier bezier;
 BSpline bSpline;
-
+BSplineM bSplineM;
 
 int selected_point = -1;
 int M_P = 0;
 int M_C = 0;
 int m = 3;
 int pval = 300;
+
+/******************************************************
+cp è un array di 4 elementi dove:
+cp[0] è il punto iniziale
+cp[1] è il primo punto di controllo
+cp[2] è il secondo punto di controllo
+cp[3] è il punto finale
+
+t è il valore del parametro, 0 <= t <= 1
+*******************************************************/
+
+POINT2D PointOnCubicBezier(POINT2D* cp, float t)
+{
+    float   ax, bx, cx;
+    float   ay, by, cy;
+    float   tSquared, tCubed;
+    POINT2D result;
+
+    /* calcolo dei coefficienti del polinomio */
+
+    cx = 3.0 * (cp[1].x - cp[0].x);
+    bx = 3.0 * (cp[2].x - cp[1].x) - cx;
+    ax = cp[3].x - cp[0].x - cx - bx;
+
+    cy = 3.0 * (cp[1].y - cp[0].y);
+    by = 3.0 * (cp[2].y - cp[1].y) - cy;
+    ay = cp[3].y - cp[0].y - cy - by;
+
+    /* calcolo del punto della curva in relazione a t */
+
+    tSquared = t * t;
+    tCubed = tSquared * t;
+
+    result.x = (ax * tCubed) + (bx * tSquared) + (cx * t) + cp[0].x;
+    result.y = (ay * tCubed) + (by * tSquared) + (cy * t) + cp[0].y;
+
+    return result;
+}
+
+/*****************************************************************************
+ComputeBezier riempe un array di strutture Point2D  con i punti della curva
+generati dai punti di controllo cp. Il chiamante deve allocare memoria
+sufficiente per il risultato che è <sizeof(Point2D) * numeroDiPunti>
+******************************************************************************/
+
+void ComputeBezier(POINT2D* cp, int numberOfPoints, POINT2D* curve)
+{
+    float dt;
+    int   i;
+
+    dt = 1.0 / (numberOfPoints - 1);
+
+    for (i = 0; i < numberOfPoints; i++)
+        curve[i] = PointOnCubicBezier(cp, i*dt);
+}
+
+// BEZIER
+
+// A utility function to return minimum of two integers
+int min(int a, int b)
+{
+    return (a<b) ? a : b;
+}
+
+// Returns value of Binomial Coefficient C(n, k)
+int binomialCoeff(int n, int k)
+{
+    int** C;
+    int i, j;
+
+    C = new int*[n + 1];
+    for (i = 0; i < n + 1; i++) {
+        C[i] = new int[k + 1];
+    }
+
+    // Caculate value of Binomial Coefficient in bottom up manner
+    for (i = 0; i <= n; i++)
+    {
+        for (j = 0; j <= min(i, k); j++)
+        {
+            // Base Cases
+            if (j == 0 || j == i)
+                C[i][j] = 1;
+
+            // Calculate value using previosly stored values
+            else
+                C[i][j] = C[i - 1][j - 1] + C[i - 1][j];
+        }
+    }
+
+    return C[n][k];
+}
+
+void valuta_bezier(float* t, float* x, float* y, float* px, float* py)
+{
+    float dtg = 1.0 / (float)(pval - 1);
+    float tg = 0;
+    int k, i, n = Punti.size();
+    float *B = new float[Punti.size()];
+
+    for (k = 0; k < pval; k++, tg += dtg)
+    {
+        px[k] = 0;
+        py[k] = 0;
+
+        for (i = 0; i < n; i++) {
+            B[i] = (float)binomialCoeff((n-1), i) * pow((1 - tg), n - i - 1) * pow(tg, i);
+        }
+
+        for (i = 0; i < n; i++)
+        {
+            px[k] = px[k] + x[i] * B[i];
+            py[k] = py[k] + y[i] * B[i];
+
+        }
+    }
+}
+
+// CURVA A NODI SEMPLICI
 
 void parametrizzazione_uniforme(float *t)
 {
@@ -267,69 +402,133 @@ void ValutaSpline(float* Nodi, float *alfa, float *beta, float *sx, float *sy)
 		//	printf("sx[%d]=%f\n", k, sx[k]);
 		//printf("sy[%d]=%f\n", k, sy[k]);
 	}
-
 }
 
-void display(void) {
-	int i;
+void drawBezier()
+{
+    int i;
 
-	float** A = new float*[Punti.size()];
+    glClearColor(0.0, 0.0, 0.0, 1.0);
+    glClear(GL_COLOR_BUFFER_BIT);
 
-	for (i = 0; i < Punti.size(); i++) {
-		A[i] = new float[Punti.size()]();
-	}
+    glPointSize(5.0);
+    glColor3f(1.0, 1.0, 1.0);
+    glBegin(GL_POINTS);
+    for (i = 0; i < Punti.size(); i++)
+        glVertex2f(Punti.at(i).x, Punti.at(i).y);
+    glEnd();
 
-	glClearColor(0.0, 0.0, 0.0, 1.0);
-	glClear(GL_COLOR_BUFFER_BIT);
+    glEnable(GL_LINE_STIPPLE);
+    glLineStipple(4, 0x3F07);
+    glBegin(GL_LINE_STRIP);
+    for (i = 0; i < Punti.size(); i++)
+        glVertex2f(Punti.at(i).x, Punti.at(i).y);
+    glEnd();
 
-	glPointSize(5.0);
-	glColor3f(1.0, 1.0, 1.0);
-	glBegin(GL_POINTS);
-	for (i = 0; i < Punti.size(); i++)
-		glVertex2f(Punti.at(i).x, Punti.at(i).y);
-	glEnd();
+    glDisable(GL_LINE_STIPPLE);
 
-	glEnable(GL_LINE_STIPPLE);
-	glLineStipple(4, 0x3F07);
-	glBegin(GL_LINE_STRIP);
-	for (i = 0; i < Punti.size(); i++)
-		glVertex2f(Punti.at(i).x, Punti.at(i).y);
-	glEnd();
+    if (Punti.size() > 1) {
+        bezier.t = new float[Punti.size()];
+        parametrizzazione_uniforme(bezier.t);
 
-	glDisable(GL_LINE_STIPPLE);
+        bezier.x = new float[Punti.size()];
+        bezier.y = new float[Punti.size()];
+        bezier.px = new float[pval];
+        bezier.py = new float[pval];
 
-	if (Punti.size() >= m) {
-		bSpline.t = new float[Punti.size()];
-		parametrizzazione_uniforme(bSpline.t);
+        for (i = 0; i < Punti.size(); i++) {
+            bezier.x[i] = Punti.at(i).x;
+            bezier.y[i] = Punti.at(i).y;
+        }
 
-		int DimPartNodEstesa = Punti.size() + m;
-		bSpline.Nodi = new float[DimPartNodEstesa];
-		bSpline.x = new float[Punti.size()];
-		bSpline.y = new float[Punti.size()];
-		bSpline.alpha = new float[Punti.size()];
-		bSpline.beta = new float[Punti.size()];
-		bSpline.sx = new float[pval];
-		bSpline.sy = new float[pval];
+        valuta_bezier(bezier.t, bezier.x, bezier.y, bezier.px, bezier.py);
 
-		Partizione_nodale_estesa(bSpline.t, bSpline.Nodi);
+        glColor4f(1.0, 0.0, 0.0, 1.0);
+        glBegin(GL_LINE_STRIP);
+        for (i = 0; i < pval; i++) {
+            glVertex3f(bezier.px[i], bezier.py[i], 0);
+        }
+        glEnd();
+    }
+}
 
-		costruisciMatriceSistema(bSpline.Nodi, bSpline.t, A);
+void drawBSpline()
+{
+    int i;
 
-		for (i = 0; i < Punti.size(); i++) {
-			bSpline.x[i] = Punti.at(i).x;
-			bSpline.y[i] = Punti.at(i).y;
-		}
-		Risolvi(A, bSpline.x, bSpline.y, bSpline.alpha, bSpline.beta);
+    float** A = new float*[Punti.size()];
 
-		ValutaSpline(bSpline.Nodi, bSpline.alpha, bSpline.beta, bSpline.sx, bSpline.sy);
+    for (i = 0; i < Punti.size(); i++) {
+        A[i] = new float[Punti.size()]();
+    }
 
-		glColor4f(1.0, 0.0, 0.0, 1.0);
-		glBegin(GL_LINE_STRIP);
-		for (i = 0; i < pval; i++) {
-			glVertex3f(bSpline.sx[i], bSpline.sy[i], 0);
-		}
-		glEnd();
-	}
+    glClearColor(0.0, 0.0, 0.0, 1.0);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    glPointSize(5.0);
+    glColor3f(1.0, 1.0, 1.0);
+    glBegin(GL_POINTS);
+    for (i = 0; i < Punti.size(); i++)
+        glVertex2f(Punti.at(i).x, Punti.at(i).y);
+    glEnd();
+
+    glEnable(GL_LINE_STIPPLE);
+    glLineStipple(4, 0x3F07);
+    glBegin(GL_LINE_STRIP);
+    for (i = 0; i < Punti.size(); i++)
+        glVertex2f(Punti.at(i).x, Punti.at(i).y);
+    glEnd();
+
+    glDisable(GL_LINE_STIPPLE);
+
+    if (Punti.size() >= m) {
+        bSpline.t = new float[Punti.size()];
+        parametrizzazione_uniforme(bSpline.t);
+
+        int DimPartNodEstesa = Punti.size() + m;
+        bSpline.Nodi = new float[DimPartNodEstesa];
+        bSpline.x = new float[Punti.size()];
+        bSpline.y = new float[Punti.size()];
+        bSpline.alpha = new float[Punti.size()];
+        bSpline.beta = new float[Punti.size()];
+        bSpline.sx = new float[pval];
+        bSpline.sy = new float[pval];
+
+        Partizione_nodale_estesa(bSpline.t, bSpline.Nodi);
+
+        costruisciMatriceSistema(bSpline.Nodi, bSpline.t, A);
+
+        for (i = 0; i < Punti.size(); i++) {
+            bSpline.x[i] = Punti.at(i).x;
+            bSpline.y[i] = Punti.at(i).y;
+        }
+        Risolvi(A, bSpline.x, bSpline.y, bSpline.alpha, bSpline.beta);
+
+        ValutaSpline(bSpline.Nodi, bSpline.alpha, bSpline.beta, bSpline.sx, bSpline.sy);
+
+        glColor4f(1.0, 0.0, 0.0, 1.0);
+        glBegin(GL_LINE_STRIP);
+        for (i = 0; i < pval; i++) {
+            glVertex3f(bSpline.sx[i], bSpline.sy[i], 0);
+        }
+        glEnd();
+    }
+}
+
+void display(void)
+{
+    switch (M_C) {
+    case 0:
+        drawBezier();
+        break;
+
+    case 1:
+        drawBSpline();
+        break;
+
+    default:
+        break;
+    }
 
 	glFlush();
 }
@@ -408,7 +607,9 @@ void menu_punti(int num) {
 }
 
 void menu_curve(int num) {
+    M_C = num;
 
+    glutPostRedisplay();
 }
 
 void menu(int num) {
