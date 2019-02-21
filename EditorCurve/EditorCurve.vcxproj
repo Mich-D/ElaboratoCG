@@ -154,7 +154,24 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Bezier.cpp" />
+    <ClCompile Include="GestioneMenu.cpp" />
+    <ClCompile Include="GestioneStringhe.cpp" />
+    <ClCompile Include="hermite.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="NURBS.cpp" />
+    <ClCompile Include="parametrizzazione.cpp" />
+    <ClCompile Include="Spline.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Bezier.h" />
+    <ClInclude Include="GestioneMenu.h" />
+    <ClInclude Include="GestioneStringhe.h" />
+    <ClInclude Include="hermite.h" />
+    <ClInclude Include="librerie.h" />
+    <ClInclude Include="NURBS.h" />
+    <ClInclude Include="parametrizzazione.h" />
+    <ClInclude Include="Spline.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

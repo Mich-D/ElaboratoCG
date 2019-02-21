@@ -18,6 +18,9 @@
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="objloader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -27,17 +30,36 @@
     <None Include="basic.vert">
       <Filter>Source Files</Filter>
     </None>
-    <None Include="color.frag">
+    <None Include="shader.frag">
       <Filter>Source Files</Filter>
     </None>
-    <None Include="color.vert">
+    <None Include="shader.vert">
       <Filter>Source Files</Filter>
     </None>
-    <None Include="color2.vert">
+    <None Include="light.vert">
       <Filter>Source Files</Filter>
     </None>
-    <None Include="color2.frag">
+    <None Include="light.frag">
       <Filter>Source Files</Filter>
     </None>
+    <None Include="texture.vert">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="texture.frag">
+      <Filter>Source Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stb_image.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="objloader.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="tile.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>
